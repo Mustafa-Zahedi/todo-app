@@ -1,17 +1,24 @@
-import { Request, Response } from "express";
+import "reflect-metadata";
+import express from "express";
+import dotenv from "dotenv";
 
-const express = require("express");
-const dotenv = require("dotenv");
+import api from "./routes/api";
+import { AppDataSource } from "./data-source";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 4000;
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
-});
+app.use("/", api);
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+AppDataSource.initialize()
+  .then(() => {
+    // start application after connection with database!
+    app.listen(port, () => {
+      console.log(`🚀 app is running on PORT => ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log("Error while connecting with database", err);
+  });
