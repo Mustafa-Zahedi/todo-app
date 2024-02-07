@@ -8,24 +8,32 @@ const routes = Router();
 const taskServices = new TaskServices();
 
 routes.post(
-  "/task",
-  [check("title").notEmpty(), check("description").notEmpty()],
-  authGuard,
-  //   (req, res) => {}
+  "",
+  [
+    check("title").notEmpty(),
+    check("description").notEmpty(),
+    check("deadline").notEmpty(),
+    check("status").notEmpty(),
+  ],
+  // authGuard,
   taskServices.createTask
 );
 
-routes.get("/task", authGuard, taskServices.getTasks);
+routes.get(
+  "",
+  //  authGuard,
+  taskServices.getTasks
+);
 
 routes.put(
-  "/task/:id",
+  "/:id",
   [check("title").notEmpty(), check("description").notEmpty()],
   authGuard,
   taskServices.updateTask
 );
 
 routes.delete(
-  "/task/:id",
+  "/:id",
   [check("id").notEmpty()],
   authGuard,
   taskServices.deleteTask
