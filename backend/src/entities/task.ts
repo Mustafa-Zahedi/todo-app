@@ -10,4 +10,10 @@ export class Task {
 
   @Column()
   description!: string;
+
+  @Column()
+  deadline!: Date;
+
+  @Column()
+  status!: string;
 }
