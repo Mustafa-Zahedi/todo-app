@@ -20,11 +20,18 @@ export class TaskServices {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description } = req.body;
+    const { title, description, deadline, status } = req.body;
+
+    // console.log(title, description, deadline, status);
 
     const taskModel = getMyRepository(Task);
 
-    const createdTask = await taskModel.save({ title, description });
+    const createdTask = await taskModel.save({
+      title,
+      description,
+      status,
+      deadline,
+    });
 
     return res.status(200).json(createdTask);
   }
