@@ -1,4 +1,8 @@
+import Button from "@/components/button";
 import { Metadata } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
 export const metadata: Metadata = {
   title: "Todo App",
@@ -6,23 +10,107 @@ export const metadata: Metadata = {
 };
 
 async function getData() {
-  const res = await fetch("http://localhost:4000/api/task");
+  const res = await fetch("http://localhost:4000/api/task", {
+    method: "GET",
+    next: { revalidate: 10 },
+  });
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
     throw new Error("Failed to fetch data");
   }
 
+  // Recommendation: handle errors manually
   return res.json();
 }
 
+async function deleteTask(id: number) {
+  console.log("id: ", id);
+
+  const res = await fetch(`http://localhost:4000/api/task/${id}`, {
+    method: "DELETE",
+    next: { revalidate: 10 },
+  });
+
+  // if (!res.ok) {
+  //   // This will activate the closest `error.js` Error Boundary
+  //   throw new Error("Failed to delete task");
+  // }
+
+  // return res.json();
+}
+
 export default async function Home() {
+  // const router = useRouter();
   const res = await getData();
-  // console.log("res: ", res);
+  console.log("res: ", JSON.stringify(res, null, 2));
+
+  async function handleDelete(id: number) {
+    const res = await deleteTask(id);
+    // if (res) {
+    //   router.reload();
+    // }
+  }
+
+  if (!res) {
+    return <div>No data</div>;
+  }
+
+  if (res instanceof Error) {
+    return <div>{res.message}</div>;
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>Todo app</h1>
-    </main>
+    <div className="bg-white dark:bg-gray-800 shadow-md dark:shadow-none rounded-lg p-6">
+      <main className="flex flex-col items-center p-24">
+        <h1 className="text-2xl font-bold mb-4">Todo app</h1>
+        <ul className="grid gap-2 dark:bg-gray-800">
+          {res.map((task: any) => (
+            <li
+              key={task.id}
+              className="bg-white dark:bg-gray-700 p-4 rounded-md flex flex-col items-center justify-between"
+            >
+              <div>
+                <h2 className="font-bold">{task.title}</h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {task.description}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Deadline: {task.deadline}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Status: {task.status}
+                </p>
+              </div>
+              <div>
+                <button
+                  className="text-blue-500 dark:text-blue-300 rounded-md p-2 hover:bg-blue-100 dark:hover:bg-blue-900"
+                  aria-label="Edit task"
+                >
+                  <FaEdit />
+                </button>
+                <Button
+                  className="text-red-500 dark:text-red-300 rounded-md p-2 hover:bg-red-100 dark:hover:bg-red-900"
+                  aria-label="Delete task"
+                  onClick={handleDelete(task.id)}
+                >
+                  <FaTrash />
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <Link href={"create"} passHref>
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded-md shadow-md flex items-center justify-center mt-4 hover:bg-blue-600"
+            aria-label="Create new task"
+          >
+            <FaPlus className="mr-2" />
+            Create New Task
+          </button>
+        </Link>
+      </main>
+    </div>
   );
 }

@@ -14,6 +14,17 @@ export class TaskServices {
     return res.status(200).json(tasks);
   }
 
+  async getTask(req: Request, res: Response) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { id } = req.params;
+    const tasks = await getMyRepository(Task).findOne({ where: { id } });
+
+    return res.status(200).json(tasks);
+  }
+
   async createTask(req: Request, res: Response) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -41,7 +52,7 @@ export class TaskServices {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { title, description, deadline, status } = req.body;
+    const { title, description, deadline, status } = req.params;
     const updatedTask = await getMyRepository(Task).update(req.params.id, {
       title,
       description,
