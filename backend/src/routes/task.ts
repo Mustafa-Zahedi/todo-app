@@ -39,10 +39,4 @@ routes.delete(
   taskServices.deleteTask
 );
 
-// const token = generateToken({
-//     id: findUser.id,
-//     role: findUser.is_super_admin,
-//     username: findUser.userName,
-//   });
-
 export default routes;

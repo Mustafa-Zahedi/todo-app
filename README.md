@@ -18,6 +18,10 @@ This repository contains two directories:
 - Access the frontend at [http://localhost:3000](http://localhost:3000)
 - Use the API endpoints provided by the backend
 
+## Backend
+
+The backend uses a PostgreSQL database and TypeORM for interacting with the database. It also utilizes Passport.js and JWT for authentication purposes.
+
 ## Technologies
 
 - Node.js
