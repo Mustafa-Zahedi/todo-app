@@ -1,9 +1,7 @@
-import React from "react";
-
-export default function CreateTask() {
+export default function EditTask() {
   return (
     <div>
-      <h1>Add Task</h1>
+      <h1>Edit Task</h1>
     </div>
   );
 }
