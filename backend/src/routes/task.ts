@@ -26,14 +26,14 @@ routes.get(
 );
 
 routes.put(
-  "/:id",
+  ":id",
   [check("title").notEmpty(), check("description").notEmpty()],
   authGuard,
   taskServices.updateTask
 );
 
 routes.delete(
-  "/:id",
+  ":id",
   [check("id").notEmpty()],
   authGuard,
   taskServices.deleteTask

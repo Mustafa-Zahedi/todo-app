@@ -6,10 +6,16 @@ import { UserServices } from "../services/user";
 
 const routes = Router();
 
-const userServices = new UserServices();
+const userService = new UserServices();
 
 routes.post(
-  "",
+  "/login",
+  [check("email").notEmpty(), check("password").notEmpty()],
+  userService.login
+);
+
+routes.post(
+  "/register",
   [
     check("fullname").notEmpty(),
     check("email").notEmpty().isEmail(),
@@ -17,27 +23,27 @@ routes.post(
     check("role").notEmpty(),
   ],
   // authGuard,
-  userServices.createUser
+  userService.createUser
 );
 
-routes.get(
-  "",
-  //  authGuard,
-  userServices.getUser
-);
+routes.get("", authGuard, userService.getUser);
 
 routes.put(
-  "/:id",
-  [check("title").notEmpty(), check("description").notEmpty()],
+  ":id",
+  [
+    check("fullname").notEmpty(),
+    check("role").notEmpty(),
+    check("password").notEmpty(),
+  ],
   authGuard,
-  userServices.updateUser
+  userService.updateUser
 );
 
 routes.delete(
-  "/:id",
+  ":id",
   [check("id").notEmpty()],
   authGuard,
-  userServices.deleteUser
+  userService.deleteUser
 );
 
 // const token = generateToken({
