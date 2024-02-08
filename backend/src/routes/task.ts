@@ -42,7 +42,7 @@ routes.put(
 routes.delete(
   "/:id",
   [check("id").notEmpty()],
-  authGuard,
+  // authGuard,
   taskServices.deleteTask
 );
 
