@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { TaskServices } from "../services/task";
 import { authGuard } from "../middlewares/passport";
 import { UserServices } from "../services/user";
 
@@ -29,7 +28,7 @@ routes.post(
 routes.get("", authGuard, userService.getUser);
 
 routes.put(
-  ":id",
+  "/:id",
   [
     check("fullname").notEmpty(),
     check("role").notEmpty(),
@@ -40,7 +39,7 @@ routes.put(
 );
 
 routes.delete(
-  ":id",
+  "/:id",
   [check("id").notEmpty()],
   authGuard,
   userService.deleteUser
