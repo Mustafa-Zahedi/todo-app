@@ -1,15 +1,24 @@
 "use client";
 
-import { revalidatePath, revalidateTag } from "next/cache";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { createTask } from "../actions";
 import { useRouter } from "next/navigation";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { createTask } from "../actions";
+
 export type TaskInputs = {
   title: string;
   description: string;
-  deadline: string;
-  status: string;
+  deadline: Date;
+  status: "ACTIVE" | "INACTIVE";
 };
+
+const schema = yup.object().shape({
+  title: yup.string().required(),
+  description: yup.string().min(5).max(2048).required(),
+  deadline: yup.date().required(),
+  status: yup.string().oneOf(["ACTIVE", "INACTIVE"]).required(),
+});
 
 export default function CreateTask() {
   const router = useRouter();
@@ -18,7 +27,9 @@ export default function CreateTask() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<TaskInputs>();
+  } = useForm<TaskInputs>({
+    resolver: yupResolver(schema),
+  });
   const onSubmit: SubmitHandler<TaskInputs> = async (data) => {
     // console.log(data);
     const res = await createTask({ ...data, status: "ACTIVE" });
@@ -27,11 +38,14 @@ export default function CreateTask() {
     }
   };
 
-  console.log(watch("title")); // watch input value by passing the name of it
+  // console.log(watch("title")); // watch input value by passing the name of it
 
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
-    <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col w-full m-auto"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       {/* register your input into the hook by invoking the "register" function */}
       <div className="mb-4 flex flex-col">
         <label
@@ -47,7 +61,7 @@ export default function CreateTask() {
         />
 
         <p className="mt-2 text-sm text-red-600">
-          {errors?.title && <span>This field is required</span>}
+          {<span>{errors?.title?.message}</span>}
         </p>
       </div>
 
@@ -58,13 +72,13 @@ export default function CreateTask() {
         >
           Description
         </label>
-        <input
-          type="textarea"
+        <textarea
+          rows={5}
           className="block dark:bg-gray-700 w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           {...register("description", { required: true })}
         />
         <p className="mt-2 text-sm text-red-600">
-          {errors?.description && <span>This field is required</span>}
+          {<span>{errors?.description?.message}</span>}
         </p>
       </div>
 
@@ -81,7 +95,7 @@ export default function CreateTask() {
           {...register("deadline", { required: true })}
         />
         <p className="mt-2 text-sm text-red-600">
-          {errors?.description && <span>This field is required</span>}
+          {<span>{errors?.deadline?.message}</span>}
         </p>
       </div>
 
