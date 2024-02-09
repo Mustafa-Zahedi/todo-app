@@ -33,7 +33,7 @@ export class TaskServices {
 
     const { title, description, deadline, status } = req.body;
 
-    // console.log(title, description, deadline, status);
+    console.log(title, description, deadline, status);
 
     const taskModel = getMyRepository(Task);
 
@@ -41,7 +41,7 @@ export class TaskServices {
       title,
       description,
       status,
-      deadline,
+      deadline: new Date(deadline),
     });
 
     return res.status(200).json(createdTask);
@@ -52,15 +52,24 @@ export class TaskServices {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { title, description, deadline, status } = req.params;
-    const updatedTask = await getMyRepository(Task).update(req.params.id, {
-      title,
-      description,
-      deadline,
-      status,
+    let { title, description, deadline, status } = req.body;
+    deadline = new Date(deadline);
+    // console.log(title, description, deadline, status, req.params.id);
+    await getMyRepository(Task).update(
+      { id: +req.params.id },
+      {
+        title,
+        description,
+        deadline,
+        status,
+      }
+    );
+
+    const findTask = await getMyRepository(Task).findOne({
+      where: { id: +req.params.id },
     });
 
-    return res.status(200).json(updatedTask);
+    return res.status(200).json(findTask);
   }
 
   async deleteTask(req: Request, res: Response) {

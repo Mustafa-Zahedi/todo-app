@@ -34,8 +34,13 @@ routes.get(
 
 routes.put(
   "/:id",
-  [check("title").notEmpty(), check("description").notEmpty()],
-  authGuard,
+  [
+    check("title").isString().notEmpty(),
+    check("description").notEmpty().isString(),
+    check("deadline").isString().notEmpty(),
+    check("status").notEmpty().isString(),
+  ],
+  // authGuard,
   taskServices.updateTask
 );
 

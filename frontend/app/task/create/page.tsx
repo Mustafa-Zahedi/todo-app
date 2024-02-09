@@ -4,14 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { createTask } from "../actions";
-
-export type Task = {
-  title: string;
-  description: string;
-  deadline: Date;
-  status: "ACTIVE" | "INACTIVE";
-};
+import { Task, createTask } from "../actions";
 
 const schema = yup.object().shape({
   title: yup.string().required(),
