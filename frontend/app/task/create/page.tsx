@@ -12,7 +12,7 @@ const schema = yup.object().shape({
   deadline: yup.date().required(),
   status: yup
     .string()
-    .oneOf(["ACTIVE", "INACTIVE"])
+    .oneOf(["ACTIVE", "COMPLETE"])
     .default("ACTIVE")
     .required(),
 });

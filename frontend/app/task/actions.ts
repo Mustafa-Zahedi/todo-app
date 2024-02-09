@@ -6,7 +6,7 @@ export type Task = {
   title: string;
   description: string;
   deadline: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: "ACTIVE" | "COMPLETE";
 };
 
 const apiUrl =
@@ -48,7 +48,7 @@ export async function updateTask(id: number, data: Task) {
 export const getTask = async (id: number): Promise<Task> => {
   const res = await fetch(`${apiUrl}/task/${id}`, {
     method: "GET",
-    next: { revalidate: 100 },
+    next: { revalidate: 10 },
   });
 
   if (!res.ok) {

@@ -12,7 +12,7 @@ const schema = yup.object().shape({
   title: yup.string().required(),
   description: yup.string().min(5).max(2048).required(),
   deadline: yup.string().required(),
-  status: yup.string().oneOf(["ACTIVE", "INACTIVE"]).required(),
+  status: yup.string().oneOf(["ACTIVE", "COMPLETE"]).required(),
 });
 
 export default function EditTask({
@@ -30,6 +30,8 @@ export default function EditTask({
     resolver: yupResolver(schema),
     defaultValues: async () => {
       const task = await getTask(+id);
+      console.log(task);
+
       return {
         ...task,
         deadline: formatDateToYyyyMmDd(new Date(task.deadline)),
@@ -120,7 +122,7 @@ export default function EditTask({
           {...register("status")}
         >
           <option value="ACTIVE">ACTIVE</option>
-          <option value="INACTIVE">INACTIVE</option>
+          <option value="COMPLETE">COMPLETE</option>
         </select>
         <p className="mt-2 text-sm text-red-600">
           {<span>{errors?.status?.message}</span>}

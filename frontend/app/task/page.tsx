@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { FaEdit, FaTrash, FaPlus, FaInfo } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaInfo, FaCircle } from "react-icons/fa";
 import DeleteButton from "@/components/delete-btn";
 import { revalidatePath } from "next/cache";
+import { MdDone, MdDoneAll } from "react-icons/md";
+import { Task, updateTask } from "./actions";
+import StatusButton from "@/components/status-btn";
 
 export const metadata: Metadata = {
   title: "Todo App",
@@ -48,6 +51,17 @@ export default async function Task() {
   const res = await getTasks();
   // console.log("res: ", JSON.stringify(res, null, 2));
 
+  async function handleStatus(id: number, task: Task) {
+    "use server";
+    const res = await updateTask(id, {
+      ...task,
+      status: "COMPLETE",
+    });
+    if (res) {
+      revalidatePath("/task", "page");
+    }
+  }
+
   async function handleDelete(id: number) {
     "use server";
     const res = await deleteTask(id);
@@ -82,16 +96,19 @@ export default async function Task() {
             key={task.id}
             className="col-span-1 flex rounded-md shadow-lg border-r border-t border-slate-300 dark:border-slate-400"
           >
-            <div
+            <StatusButton
               className={classNames(
-                task.status === "ACTIVE" ? "bg-green-500" : "bg-red-500",
-                "flex w-16 flex-shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white"
+                task.status === "ACTIVE" ? "bg-green-500" : "bg-blue-500",
+                "flex w-20 flex-shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white"
               )}
+              handleClick={handleStatus}
+              id={task.id}
+              task={task}
             >
-              {task.status === "ACTIVE" ? "Active" : "Completed"}
-            </div>
+              {task.status === "ACTIVE" ? <MdDone /> : <MdDoneAll />}
+            </StatusButton>
             <article className="flex w-full items-center justify-between">
-              <div className="p-4 flex flex-col">
+              <div className="flex flex-col px-4">
                 <h2 className="font-bold">{task.title}</h2>
                 <p className="text-gray-600 dark:text-gray-400">
                   {task.description}
