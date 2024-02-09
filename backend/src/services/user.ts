@@ -11,16 +11,23 @@ export class UserServices {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+
+    console.log("login: ", req.body);
+
     const { email, password } = req.body;
     const user: User = await getMyRepository(User).findOne({
       where: { email },
     });
+    // console.log("user: ", user);
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // compare password
     const passwordCompared = await isHashValid(password, user.password);
+
+    // console.log(passwordCompared);
 
     if (!passwordCompared) {
       return res.status(400).json({ msg: "Invalid password" });
@@ -35,7 +42,22 @@ export class UserServices {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const users = await getMyRepository(User).find();
+    const users = await getMyRepository(User).findOne({
+      where: { id: req.params.id },
+    });
+
+    return res.status(200).json(users);
+  }
+
+  async getUsers(req: Request, res: Response) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // console.log("here get users 👌🚀🚀🚀");
+
+    const users: User[] = await getMyRepository(User).find();
 
     return res.status(200).json(users);
   }
@@ -47,6 +69,8 @@ export class UserServices {
     }
 
     const { fullname, email, password, role } = req.body;
+
+    // console.log(fullname, email, password, role);
 
     const userModel = getMyRepository(User);
 

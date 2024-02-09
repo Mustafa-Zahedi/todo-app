@@ -2,6 +2,7 @@ require("dotenv").config();
 
 import { DataSource, EntityTarget, ObjectLiteral, Repository } from "typeorm";
 import { Task } from "./entities/task";
+import { User } from "./entities/user";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: "task",
   synchronize: true,
   logging: false,
-  entities: [Task],
+  entities: [Task, User],
 });
 
 export const getMyRepository = (

@@ -33,7 +33,7 @@ export class TaskServices {
 
     const { title, description, deadline, status } = req.body;
 
-    console.log(title, description, deadline, status);
+    // console.log(title, description, deadline, status);
 
     const taskModel = getMyRepository(Task);
 

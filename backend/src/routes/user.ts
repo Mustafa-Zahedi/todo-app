@@ -16,32 +16,34 @@ routes.post(
 routes.post(
   "/register",
   [
-    check("fullname").notEmpty(),
-    check("email").notEmpty().isEmail(),
-    check("password").notEmpty(),
-    check("role").notEmpty(),
+    check("fullname").isString().notEmpty(),
+    check("email").isString().notEmpty().isEmail(),
+    check("password").isString().notEmpty(),
+    check("role").isString().notEmpty(),
   ],
   // authGuard,
   userService.createUser
 );
 
-routes.get("", authGuard, userService.getUser);
+routes.get("/:id", [check("id").isNumeric().notEmpty()], userService.getUser);
+
+routes.get("/", userService.getUsers);
 
 routes.put(
   "/:id",
   [
-    check("fullname").notEmpty(),
-    check("role").notEmpty(),
-    check("password").notEmpty(),
+    check("fullname").isString().notEmpty(),
+    check("role").isString().notEmpty(),
+    check("password").isString().notEmpty(),
   ],
-  authGuard,
+  // authGuard,
   userService.updateUser
 );
 
 routes.delete(
   "/:id",
   [check("id").notEmpty()],
-  authGuard,
+  // authGuard,
   userService.deleteUser
 );
 
