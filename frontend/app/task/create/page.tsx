@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { createTask } from "../actions";
 
-export type TaskInputs = {
+export type Task = {
   title: string;
   description: string;
   deadline: Date;
@@ -17,7 +17,11 @@ const schema = yup.object().shape({
   title: yup.string().required(),
   description: yup.string().min(5).max(2048).required(),
   deadline: yup.date().required(),
-  status: yup.string().oneOf(["ACTIVE", "INACTIVE"]).required(),
+  status: yup
+    .string()
+    .oneOf(["ACTIVE", "INACTIVE"])
+    .default("ACTIVE")
+    .required(),
 });
 
 export default function CreateTask() {
@@ -27,12 +31,12 @@ export default function CreateTask() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<TaskInputs>({
+  } = useForm<Task>({
     resolver: yupResolver(schema),
   });
-  const onSubmit: SubmitHandler<TaskInputs> = async (data) => {
+  const onSubmit: SubmitHandler<Task> = async (data) => {
     // console.log(data);
-    const res = await createTask({ ...data, status: "ACTIVE" });
+    const res = await createTask({ ...data });
     if (res) {
       router.push(`/task/${res.id}`);
     }
@@ -75,7 +79,7 @@ export default function CreateTask() {
         <textarea
           rows={5}
           className="block dark:bg-gray-700 w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          {...register("description", { required: true })}
+          {...register("description")}
         />
         <p className="mt-2 text-sm text-red-600">
           {<span>{errors?.description?.message}</span>}
@@ -92,7 +96,7 @@ export default function CreateTask() {
         <input
           type="date"
           className="dark:bg-gray-700 block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          {...register("deadline", { required: true })}
+          {...register("deadline")}
         />
         <p className="mt-2 text-sm text-red-600">
           {<span>{errors?.deadline?.message}</span>}

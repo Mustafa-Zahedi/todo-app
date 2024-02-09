@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { getTask } from "../actions";
-import { TaskInputs } from "../create/page";
+import { Task } from "../create/page";
 
 export default function Task({ params }: { params: { id: number } }) {
   const { id } = params;
-  const [task, setTask] = useState<TaskInputs>();
+  const [task, setTask] = useState<Task>();
 
   useEffect(() => {
     async function get() {
