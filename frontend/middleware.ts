@@ -3,14 +3,16 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const currentUser = request.cookies.get("currentUser")?.value;
-  console.log(currentUser);
+  // console.log("currentUser: ", currentUser, );
 
-  if (currentUser) {
+  if (currentUser && request.nextUrl.pathname !== "/task") {
     return NextResponse.rewrite(new URL("/task", request.url));
   }
-  return NextResponse.rewrite(new URL("/login", request.url));
+  if (!currentUser && request.nextUrl.pathname === "/task") {
+    return NextResponse.rewrite(new URL("/login", request.url));
+  }
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: ["/task"],
 };
