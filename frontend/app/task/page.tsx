@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { MdDone, MdDoneAll } from "react-icons/md";
 import { Task, updateTask } from "./actions";
 import StatusButton from "@/components/status-btn";
+import { getServerSession } from "next-auth";
 
 export const metadata: Metadata = {
   title: "Todo App",
@@ -49,8 +50,10 @@ function classNames(...classes: string[]) {
 
 export default async function Task() {
   const res = await getTasks();
-  // console.log("res: ", JSON.stringify(res, null, 2));
 
+  const session = await getServerSession();
+
+  console.log("session from task: ", session);
   async function handleStatus(id: number, task: Task) {
     "use server";
     const res = await updateTask(id, {

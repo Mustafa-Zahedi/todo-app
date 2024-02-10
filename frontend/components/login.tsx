@@ -3,21 +3,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-
-const apiUrl =
-  process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4000/api/";
-
-async function login(params: { email: string; password: string }) {
-  const res = await fetch(`${apiUrl}/user/login`, {
-    method: "POST",
-    body: JSON.stringify(params),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  return res.json();
-}
+import { login } from "@/app/login/actions";
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -37,15 +23,20 @@ export default function Login() {
     data
   ) => {
     // console.log(data);
-    const res = await login({ ...data });
-    if (res) {
-      if (res.error) {
-        console.log("login: ", res.error);
-      } else {
-        // console.log("login: ", res);
-        localStorage.setItem("token", res.token);
-        router.push(`/task`);
+    try {
+      const res = await login({ ...data });
+      if (res) {
+        if (res.error) {
+          console.log("login: ", res.error);
+        } else {
+          // console.log("login: ", res);
+          localStorage.setItem("token", res.token);
+          // cookies().set("currentUser", res.token);
+          router.push(`/task`);
+        }
       }
+    } catch (error) {
+      console.log("login: ", error);
     }
   };
 
