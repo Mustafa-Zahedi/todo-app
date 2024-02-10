@@ -7,6 +7,7 @@ import { MdDone, MdDoneAll } from "react-icons/md";
 import { Task, updateTask } from "./actions";
 import StatusButton from "@/components/status-btn";
 import { getServerSession } from "next-auth";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Todo App",
@@ -19,21 +20,28 @@ const apiUrl =
 async function getTasks() {
   const res = await fetch(`${apiUrl}/task`, {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${cookies().get("currentUser")?.value}`,
+    },
     next: { revalidate: 10 },
   });
 
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
-  }
+  // if (!res.ok) {
+  //   // This will activate the closest `error.js` Error Boundary
+  //   throw new Error("Failed to fetch data");
+  // }
 
   // Recommendation: handle errors manually
-  return res.json();
+  return res;
 }
 
 async function deleteTask(id: number) {
   const res = await fetch(`${apiUrl}/task/${id}`, {
     method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${cookies().get("currentUser")?.value}`,
+    },
   });
 
   if (!res.ok) {
@@ -53,7 +61,7 @@ export default async function Task() {
 
   const session = await getServerSession();
 
-  console.log("session from task: ", session);
+  // console.log("session from task: ", session);
   async function handleStatus(id: number, task: Task) {
     "use server";
     const res = await updateTask(id, {
@@ -77,6 +85,16 @@ export default async function Task() {
     return <div>No data</div>;
   }
 
+  if (res.status === 401) {
+    return <div>Unauthorized</div>;
+  }
+
+  if (res.status === 403) {
+    return <div>Forbidden</div>;
+  }
+
+  const data = await res.json();
+
   if (res instanceof Error) {
     return <div>{res.message}</div>;
   }
@@ -94,7 +112,7 @@ export default async function Task() {
         </button>
       </Link>
       <ul className="mt-3 grid gap-5 ">
-        {res.map((task: any) => (
+        {data.map((task: any) => (
           <li
             key={task.id}
             className="col-span-1 flex rounded-md shadow-lg border-r border-t border-slate-300 dark:border-slate-400"

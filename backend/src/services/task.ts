@@ -33,8 +33,6 @@ export class TaskServices {
 
     const { title, description, deadline, status } = req.body;
 
-    // console.log(title, description, deadline, status);
-
     const taskModel = getMyRepository(Task);
 
     const createdTask = await taskModel.save({

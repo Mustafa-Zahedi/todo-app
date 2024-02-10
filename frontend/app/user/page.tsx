@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { FaEdit, FaTrash, FaPlus, FaInfo } from "react-icons/fa";
+import { FaTrash, FaPlus, FaInfo } from "react-icons/fa";
 import DeleteButton from "@/components/delete-btn";
 import { revalidatePath } from "next/cache";
 import { User } from "./actions";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Users",
@@ -17,7 +18,15 @@ async function getUsers() {
   const res = await fetch(`${apiUrl}/user`, {
     method: "GET",
     next: { revalidate: 10 },
+    headers: {
+      Authorization: `Bearer ${cookies().get("currentUser")?.value}`,
+    },
   });
+
+  if (res.status === 401) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Unauthorized");
+  }
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
@@ -31,6 +40,10 @@ async function getUsers() {
 async function deleteUser(id: number) {
   const res = await fetch(`${apiUrl}/user/${id}`, {
     method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${cookies().get("currentUser")?.value}`,
+    },
   });
 
   if (!res.ok) {
