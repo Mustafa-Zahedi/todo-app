@@ -62,7 +62,7 @@ The frontend is built using **Next.js 14**, offering a seamless user experience.
 
 ## Contributors
 
-- Mustafa-Zahedi
+- [Mustafa-Zaheid](https://github.com/Mustafa-Zahedi)
 
 ## License
 
