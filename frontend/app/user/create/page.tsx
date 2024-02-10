@@ -4,38 +4,34 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Task, createTask } from "../actions";
+import { User, createUser } from "../actions";
 
 const schema = yup.object().shape({
-  title: yup.string().required(),
-  description: yup.string().min(5).max(2048).required(),
-  deadline: yup.date().required(),
-  status: yup
-    .string()
-    .oneOf(["ACTIVE", "COMPLETE"])
-    .default("ACTIVE")
-    .required(),
+  fullname: yup.string().required(),
+  password: yup.string().required(),
+  email: yup.string().email().required(),
+  role: yup.string().oneOf(["ADMIN", "USER"]).default("USER").required(),
 });
 
-export default function CreateTask() {
+export default function CreateUser() {
   const router = useRouter();
   const {
     register,
     handleSubmit,
-    watch,
+
     formState: { errors },
-  } = useForm<Task>({
+  } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSubmit: SubmitHandler<Task> = async (data) => {
+  const onSubmit: SubmitHandler<User> = async (data) => {
     // console.log(data);
-    const res = await createTask({ ...data });
+    const res = await createUser({ ...data });
     if (res) {
-      router.push(`/task/${res.id}`);
+      router.push(`/user/${res.id}`);
     }
   };
 
-  // console.log(watch("title")); // watch input value by passing the name of it
+  // console.log(watch("fullname")); // watch input value by passing the name of it
 
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
@@ -46,53 +42,72 @@ export default function CreateTask() {
       {/* register your input into the hook by invoking the "register" function */}
       <div className="mb-4 flex flex-col">
         <label
-          htmlFor="title"
+          htmlFor="fullname"
           className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200"
         >
-          Title
+          Fullname
         </label>
         <input
           className="block dark:bg-gray-700  w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           defaultValue="test"
-          {...register("title")}
+          {...register("fullname")}
         />
 
         <p className="mt-2 text-sm text-red-600">
-          {<span>{errors?.title?.message}</span>}
+          {<span>{errors?.fullname?.message}</span>}
         </p>
       </div>
 
       <div className="mb-4 flex flex-col">
         <label
-          htmlFor="description"
+          htmlFor="password"
           className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200"
         >
-          Description
-        </label>
-        <textarea
-          rows={5}
-          className="block dark:bg-gray-700 w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          {...register("description")}
-        />
-        <p className="mt-2 text-sm text-red-600">
-          {<span>{errors?.description?.message}</span>}
-        </p>
-      </div>
-
-      <div className="mb-4 flex flex-col">
-        <label
-          htmlFor="deadline"
-          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200"
-        >
-          Deadline
+          Password
         </label>
         <input
-          type="date"
-          className="dark:bg-gray-700 block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          {...register("deadline")}
+          type="password"
+          className="block dark:bg-gray-700 w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          {...register("password")}
         />
         <p className="mt-2 text-sm text-red-600">
-          {<span>{errors?.deadline?.message}</span>}
+          {<span>{errors?.password?.message}</span>}
+        </p>
+      </div>
+
+      <div className="mb-4 flex flex-col">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200"
+        >
+          Email
+        </label>
+        <input
+          type="email"
+          className="dark:bg-gray-700 block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          {...register("email")}
+        />
+        <p className="mt-2 text-sm text-red-600">
+          {<span>{errors?.email?.message}</span>}
+        </p>
+      </div>
+
+      <div className="mb-4 flex flex-col">
+        <label
+          htmlFor="role"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200"
+        >
+          Role
+        </label>
+        <select
+          className="dark:bg-gray-700 block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          {...register("role")}
+        >
+          <option value="ADMIN">ADMIN</option>
+          <option value="USER">USER</option>
+        </select>
+        <p className="mt-2 text-sm text-red-600">
+          {<span>{errors?.role?.message}</span>}
         </p>
       </div>
 

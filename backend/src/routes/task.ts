@@ -1,7 +1,8 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { check } from "express-validator";
 import { TaskServices } from "../services/task";
 import { authGuard } from "../middlewares/passport";
+import { checkIsInRole } from "../helpers/check-role";
 
 const routes = Router();
 
@@ -15,27 +16,30 @@ routes.post(
     check("deadline").notEmpty(),
     check("status").notEmpty(),
   ],
-  // authGuard,
+  authGuard,
+  checkIsInRole("ADMIN"),
   taskServices.createTask
 );
 
-routes.get(
-  "",
-  //  authGuard,
-  taskServices.getTasks
-);
+routes.get("", authGuard, checkIsInRole("ADMIN"), taskServices.getTasks);
 
 routes.get(
   "/:id",
-  //  authGuard,
+  authGuard,
+  // checkIsInRole("ADMIN"),
   [check("id").notEmpty()],
   taskServices.getTask
 );
 
 routes.put(
   "/:id",
-  [check("title").notEmpty(), check("description").notEmpty()],
-  authGuard,
+  [
+    check("title").isString().notEmpty(),
+    check("description").notEmpty().isString(),
+    check("deadline").isString().notEmpty(),
+    check("status").notEmpty().isString(),
+  ],
+  // authGuard,
   taskServices.updateTask
 );
 

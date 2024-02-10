@@ -1,5 +1,9 @@
+import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { ExtractJwt, Strategy as JWTStrategy } from "passport-jwt";
+import { UserServices } from "../services/user";
+
+const userService = new UserServices();
 
 passport.use(
   new JWTStrategy(
@@ -8,7 +12,7 @@ passport.use(
       ignoreExpiration: false,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
-    (payload, done) => {
+    async (payload, done) => {
       done(null, payload);
     }
   )

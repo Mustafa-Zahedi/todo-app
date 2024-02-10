@@ -1,10 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { TaskInputs } from "./create/page";
 
-export async function createTask(data: TaskInputs) {
-  const res = await fetch("http://localhost:4000/api/task", {
+export type Task = {
+  title: string;
+  description: string;
+  deadline: string;
+  status: "ACTIVE" | "COMPLETE";
+};
+
+const apiUrl =
+  process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4000/api/";
+export async function createTask(data: Task) {
+  // console.log(data);
+
+  const res = await fetch(`${apiUrl}/task`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,10 +28,27 @@ export async function createTask(data: TaskInputs) {
   return res.json();
 }
 
-export const getTask = async (id: number) => {
-  const res = await fetch(`http://localhost:4000/api/task/${id}`, {
+export async function updateTask(id: number, data: Task) {
+  // console.log(data);
+
+  const res = await fetch(`${apiUrl}/task/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to create task");
+  }
+  revalidatePath("/task", "page");
+  return res.json();
+}
+
+export const getTask = async (id: number): Promise<Task> => {
+  const res = await fetch(`${apiUrl}/task/${id}`, {
     method: "GET",
-    next: { revalidate: 100 },
+    next: { revalidate: 10 },
   });
 
   if (!res.ok) {

@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getTask } from "../actions";
-import { TaskInputs } from "../create/page";
+import { Task, getTask } from "../actions";
 
-export default function Task({ params }: { params: { id: number } }) {
-  const { id } = params;
-  const [task, setTask] = useState<TaskInputs>();
+export default function Task({ params: { id } }: { params: { id: number } }) {
+  const [task, setTask] = useState<Task>();
 
   useEffect(() => {
     async function get() {
@@ -20,7 +18,7 @@ export default function Task({ params }: { params: { id: number } }) {
     <div>
       <h1 className="text-2xl font-bold mb-4">{task?.title}</h1>
       <p className="mb-4">{task?.description}</p>
-      <p>{task?.deadline}</p>
+      <p>{task?.deadline.toString()}</p>
       <p>{task?.status}</p>
     </div>
   );
